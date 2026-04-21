@@ -1,3 +1,13 @@
 spring:
   application:
     name: user-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hotelbooking_db
+    username: postgres
+    password: chamilaRoot@123
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
