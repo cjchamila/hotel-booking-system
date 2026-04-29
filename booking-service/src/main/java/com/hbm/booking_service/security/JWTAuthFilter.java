@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
+
 @Component
 public class JWTAuthFilter extends OncePerRequestFilter {
 
@@ -25,6 +26,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
 
         if(header == null || !header.startsWith("Bearer")){
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -40,5 +42,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request,response);
+
     }
 }
