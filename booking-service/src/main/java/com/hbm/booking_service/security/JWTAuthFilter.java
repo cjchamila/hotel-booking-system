@@ -1,5 +1,6 @@
 package com.hbm.booking_service.security;
 
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,10 +22,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
+
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
 
         if(header == null || !header.startsWith("Bearer")){
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -32,6 +35,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         String token = header.substring(7);
 
         try {
+
             validator.validateToken(token);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
@@ -40,5 +44,6 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request,response);
+
     }
 }
