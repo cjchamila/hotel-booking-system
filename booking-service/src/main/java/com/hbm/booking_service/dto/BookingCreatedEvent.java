@@ -1,5 +1,6 @@
 package com.hbm.booking_service.dto;
 
+import com.hbm.booking_service.model.BookingStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,5 +11,5 @@ public class BookingCreatedEvent {
     private Long userId;
     private Long roomId;
     private double amount;
-    private String status;
+    private BookingStatus status;
 }

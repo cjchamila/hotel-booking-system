@@ -43,7 +43,7 @@ public class BookingService {
         bookingCreatedEvent.setUserId(booking.getUserId());
         bookingCreatedEvent.setRoomId(booking.getRoomId());
         bookingCreatedEvent.setAmount(booking.getAmount());
-
+        bookingCreatedEvent.setStatus(BookingStatus.PENDING);
         kafkaTemplate.send("booking-created",bookingCreatedEvent);
     }
 
