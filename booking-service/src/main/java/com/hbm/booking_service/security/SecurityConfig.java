@@ -20,15 +20,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-      return  http.csrf(AbstractHttpConfigurer::disable)
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-                .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/bookings/**").authenticated()
-                        .anyRequest().permitAll())
-                .build();
+        http.csrf(csrf -> csrf.disable());
 
+        http.sessionManagement(sm ->
+                sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        );
+
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/bookings/**").authenticated()
+                .anyRequest().permitAll()
+        );
+
+        http.addFilterBefore(jwtAuthFilter,
+                org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
+
 }
