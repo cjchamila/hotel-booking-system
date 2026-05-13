@@ -5,32 +5,38 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.Date;
 
 @Component
 public class JWTUtil {
 
-    private final String SECRET="130e5270275817c1c2415174676579024f2b984d7286a117b074a35c5c0051e2";
+    private final PrivateKeyLoader privateKeyLoader;
 
-    public String generateToken(String email, String role){
+    public JWTUtil(PrivateKeyLoader privateKeyLoader) {
+        this.privateKeyLoader = privateKeyLoader;
+    }
+
+    public String generateToken(String email, String role,Long userId) throws Exception {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId",userId)
                 .claim("role",role)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+86400000))
-                .signWith(SignatureAlgorithm.HS256,SECRET)
+                .setExpiration(new Date(System.currentTimeMillis()+ Duration.ofHours(24).toMillis()))
+                .signWith(privateKeyLoader.getPrivateKey(), SignatureAlgorithm.RS256)
                 .compact();
     }
 
-    public Claims extractClaims(String token){
+    public Claims extractClaims(String token) throws Exception {
         return  Jwts.parserBuilder()
-                .setSigningKey(SECRET)
+                .setSigningKey(privateKeyLoader.getPrivateKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    public String extractEmail(String token){
+    public String extractEmail(String token) throws Exception {
         return extractClaims(token)
                 .getSubject();
     }
