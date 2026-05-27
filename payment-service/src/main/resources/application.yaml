@@ -1,3 +1,16 @@
+server:
+  port: 8082
 spring:
   application:
-    name: payment_service
+    name: payment-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment-service-db
+    username: postgres
+    password: chamilaRoot@123
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  kafka:
+    bootstrap-servers: localhost:29092
