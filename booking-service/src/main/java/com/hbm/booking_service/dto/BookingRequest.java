@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 public class BookingRequest {
 
+    private Long roomId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Double amount;
