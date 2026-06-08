@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 @Service
 public class BookingService {
@@ -27,16 +30,22 @@ public class BookingService {
     public void createBooking(BookingRequest bookingRequest){
         Booking booking = modelMapper.map(bookingRequest,Booking.class);
 
-        // Save to get id
-        Booking saved = bookingRepository.save(booking);
+        //Check if the requested booking request has no overlapping times for the room
+        if (bookingRepository.existsOverlap(
+                bookingRequest.getRoomId(),
+                bookingRequest.getStartDate(),
+                bookingRequest.getEndDate()
+        )) {
+            throw new RuntimeException("Booking already exists!");
+        }
 
-        // Generate reference
-        String ref=generateReference(saved.getId());
+        //Generate unique booking reference for business use-eg: for clients, support staff
+        String ref=generateBookingReference();
 
         // Update booking
-        saved.setBookingReference(ref);
+        booking.setBookingReference(ref);
 
-        bookingRepository.save(saved);
+        bookingRepository.save(booking);
 
         BookingCreatedEvent bookingCreatedEvent = new BookingCreatedEvent();
         bookingCreatedEvent.setBookingId(booking.getId());
@@ -47,12 +56,14 @@ public class BookingService {
         kafkaTemplate.send("booking-created",bookingCreatedEvent);
     }
 
-    private String generateReference(Long id){
-        String prefix = "HBS";
-        int year = LocalDateTime.now().getYear();
+    public String generateBookingReference() {
+        String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
 
-        String sequence = String.format("%04d", id);
+        String random = UUID.randomUUID()
+                .toString()
+                .substring(0, 6)
+                .toUpperCase();
 
-        return prefix+"-"+year+"-"+sequence;
+        return "BK-" + date + "-" + random;
     }
 }
