@@ -22,3 +22,6 @@ spring:
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [corrId=%X{correlationId}] %-5level %logger - %msg%n"

@@ -12,4 +12,5 @@ public class BookingCreatedEvent {
     private Long roomId;
     private double amount;
     private BookingStatus status;
+    private String correlationId;
 }
