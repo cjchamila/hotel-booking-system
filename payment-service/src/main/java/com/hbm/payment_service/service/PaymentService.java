@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Service
 public class PaymentService {
 
-    private static final Logger logger= LoggerFactory.getLogger(PaymentService.class);
+    private static final Logger log= LoggerFactory.getLogger(PaymentService.class);
 
     private final PaymentRepository paymentRepository;
 
@@ -22,11 +22,15 @@ public class PaymentService {
     }
 
     public void processPayment(BookingCreatedEvent event) {
-
+        log.info(
+                "Processing payment bookingId={} amount={}",
+                event.getBookingId(),
+                event.getAmount()
+        );
         Long bookingId= event.getBookingId();
         if(paymentRepository.existsByBookingId(event.getBookingId())) {
 
-                logger.warn(
+                log.warn(
                         "Duplicate payment event ignored for bookingId={}",
                         event.getBookingId()
                 );
@@ -43,6 +47,11 @@ public class PaymentService {
         payment.setStatus("SUCCESS");
         payment.setCreatedAt(LocalDateTime.now());
 
+
         paymentRepository.save(payment);
+        log.info(
+                "Payment processed bookingId={}",
+                event.getBookingId()
+        );
     }
 }
