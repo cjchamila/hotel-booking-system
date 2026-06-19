@@ -1,4 +1,4 @@
-package com.hbm.booking_service.security;
+package com.hbm.payment_service.security;
 
 
 import io.jsonwebtoken.Claims;
@@ -26,5 +26,8 @@ public class JWTValidator {
                     .getBody();
     }
 
-
+    public Long extractUserId(String token) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        Claims claims = validateToken(token);
+        return  claims.get("userId",Long.class);
+    }
 }
