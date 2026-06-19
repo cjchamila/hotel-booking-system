@@ -24,13 +24,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       return  http.csrf(AbstractHttpConfigurer::disable)
-
-                .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
-              .addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth-> auth
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/bookings/**").authenticated()
                         .anyRequest().permitAll())
+              .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+              .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)
+              .addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
     }

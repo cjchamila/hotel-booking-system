@@ -34,8 +34,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         if(header == null || !header.startsWith("Bearer")){
 
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            filterChain.doFilter(request,response);
         }
 
         String token = header.substring(7);
