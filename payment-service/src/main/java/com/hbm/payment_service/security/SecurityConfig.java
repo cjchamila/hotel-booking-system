@@ -1,7 +1,8 @@
-package com.hbm.booking_service.security;
+package com.hbm.payment_service.security;
 
 
-import com.hbm.booking_service.filter.CorrelationIdFilter;
+
+import com.hbm.payment_service.filter.CorrelationIdFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,7 +27,6 @@ public class SecurityConfig {
       return  http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/bookings/**").authenticated()
                         .anyRequest().permitAll())
               .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
               .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class)

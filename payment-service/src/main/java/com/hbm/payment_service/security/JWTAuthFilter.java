@@ -1,4 +1,5 @@
-package com.hbm.booking_service.security;
+package com.hbm.payment_service.security;
+
 
 
 import io.jsonwebtoken.Claims;
@@ -63,7 +64,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                     .getContext()
                     .setAuthentication(authentication);
 
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException  | InvalidKeySpecException e) {
             throw new RuntimeException(e);
         }
 
