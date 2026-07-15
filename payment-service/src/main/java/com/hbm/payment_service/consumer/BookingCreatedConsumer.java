@@ -1,6 +1,7 @@
 package com.hbm.payment_service.consumer;
 
 import com.hbm.payment_service.dto.BookingCreatedEvent;
+import com.hbm.payment_service.metrics.impl.MicrometerPaymentMetrics;
 import com.hbm.payment_service.service.PaymentService;
 import org.slf4j.MDC;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,8 +12,11 @@ public class BookingCreatedConsumer {
 
     private final PaymentService paymentService;
 
-    public BookingCreatedConsumer(PaymentService paymentService) {
+    private final MicrometerPaymentMetrics metrics;
+
+    public BookingCreatedConsumer(PaymentService paymentService, MicrometerPaymentMetrics metrics) {
         this.paymentService = paymentService;
+        this.metrics = metrics;
     }
 
     @KafkaListener(
@@ -20,7 +24,7 @@ public class BookingCreatedConsumer {
             groupId = "payment-group"
     )
     public void consume(BookingCreatedEvent event) {
-
+            metrics.bookingEventConsumed();
         MDC.put(
                 "correlationId",
                 event.getCorrelationId()
@@ -28,6 +32,7 @@ public class BookingCreatedConsumer {
 
         try{
             paymentService.processPayment(event);
+
         } finally {
             MDC.clear();
         }

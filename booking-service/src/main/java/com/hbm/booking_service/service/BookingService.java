@@ -2,6 +2,7 @@ package com.hbm.booking_service.service;
 
 import com.hbm.booking_service.dto.BookingCreatedEvent;
 import com.hbm.booking_service.dto.BookingRequest;
+import com.hbm.booking_service.metrics.BookingMetrics;
 import com.hbm.booking_service.model.Booking;
 import com.hbm.booking_service.model.BookingStatus;
 import com.hbm.booking_service.repository.BookingRepository;
@@ -24,6 +25,8 @@ public class BookingService {
 
     private static final Logger log = LoggerFactory.getLogger(BookingService.class);
 
+    private final BookingMetrics bookingMetrics;
+
     @Autowired
     ModelMapper modelMapper;
 
@@ -32,6 +35,10 @@ public class BookingService {
 
     @Autowired
     BookingRepository bookingRepository;
+
+    public BookingService(BookingMetrics bookingMetrics) {
+        this.bookingMetrics = bookingMetrics;
+    }
 
     public void createBooking(BookingRequest bookingRequest){
         Booking booking = modelMapper.map(bookingRequest,Booking.class);
@@ -57,6 +64,8 @@ public class BookingService {
         );
         bookingRepository.save(booking);
 
+        bookingMetrics.bookingCreated();
+
         log.info(
                 "Booking created bookingId={} bookingNumber={}",
                 booking.getId(),
@@ -75,6 +84,7 @@ public class BookingService {
                 booking.getId()
         );
         kafkaTemplate.send("booking-created",bookingCreatedEvent);
+        bookingMetrics.bookingEventPublished();
     }
 
     public String generateBookingReference() {

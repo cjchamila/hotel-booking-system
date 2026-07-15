@@ -14,6 +14,9 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:29092
+    consumer:
+      group-id: payment-group
+      auto-offset-reset: earliest
 
 logging:
   pattern:

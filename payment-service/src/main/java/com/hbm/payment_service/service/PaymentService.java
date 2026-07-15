@@ -1,7 +1,9 @@
 package com.hbm.payment_service.service;
 
+import com.hbm.payment_service.consumer.BookingCreatedConsumer;
 import com.hbm.payment_service.dto.BookingCreatedEvent;
 import com.hbm.payment_service.entity.Payment;
+import com.hbm.payment_service.metrics.impl.MicrometerPaymentMetrics;
 import com.hbm.payment_service.repository.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +19,17 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
 
-    public PaymentService(PaymentRepository paymentRepository) {
+    private final MicrometerPaymentMetrics metrics;
+
+
+    public PaymentService(PaymentRepository paymentRepository, MicrometerPaymentMetrics metrics) {
         this.paymentRepository = paymentRepository;
+        this.metrics = metrics;
+
     }
 
     public void processPayment(BookingCreatedEvent event) {
+
         log.info(
                 "Processing payment bookingId={} amount={}",
                 event.getBookingId(),
@@ -49,6 +57,8 @@ public class PaymentService {
 
 
         paymentRepository.save(payment);
+        metrics.paymentProcessed();
+
         log.info(
                 "Payment processed bookingId={}",
                 event.getBookingId()

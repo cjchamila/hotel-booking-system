@@ -14,13 +14,13 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
             SELECT COUNT(b) > 0
             FROM Booking b
             WHERE b.roomId = :roomID
-            AND b.startDate < :endDate
-            AND b.endDate > :startDate
+            AND b.startDate < :reqEndDate
+            AND b.endDate > :reqStartDate
             """)
     boolean existsOverlap(
             @Param("roomID") Long roomID,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate
+            @Param("reqStartDate") LocalDateTime startDate,
+            @Param("reqEndDate") LocalDateTime endDate
     ) ;
 
 
