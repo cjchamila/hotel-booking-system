@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    # Best Practice: NEVER hardcode credentials here. Use external environment variables.
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      # Production connection pool fine-tuning
+      maximum-pool-size: 20
+      minimum-idle: 5
+
+  jpa:
+    # Best Practice: Strict read-only validation. App crashes if code mismatch with DB schema.
+    hibernate:
+      ddl-auto: validate
+    show-sql: false # Disabled to save CPU cycles and prevent leaking data into log files
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: false # Set to true ONLY if migrating an older legacy app

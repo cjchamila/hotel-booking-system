@@ -2,12 +2,31 @@ spring:
   application:
     name: user-service
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/hotelbooking_db
-    username: postgres
-    password: chamilaRoot@123
+server:
+  port: 8080
+#  servlet:
+#    context-path: /api/v1
 
+  # 1. Database Connection Settings
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/userservice_db
+#    username: postgres
+#    password: chamilaRoot@123
+
+
+  # Global JPA configurations (Dialect, naming strategies, etc.)
   jpa:
-    hibernate:
-      ddl-auto: update
+    open-in-view: false # Production performance best practice (prevents connection leaks)
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Global Flyway configurations
+  flyway:
+    locations: classpath:db/migration
+
+
+
+
+
 

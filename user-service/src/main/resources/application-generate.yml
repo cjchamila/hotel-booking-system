@@ -1,0 +1,17 @@
+spring:
+  jpa:
+    # Wipes/creates tables on startup during early rapid feature building
+    #hibernate:
+    #      ddl-auto: create
+    #    show-sql: true # Prints queries directly to your IntelliJ console
+    properties:
+      # Forces Hibernate to export schema data to your Flyway file path on boot
+      jakarta:
+        persistence:
+          schema-generation:
+            create-source: metadata
+            scripts:
+              action: create
+              create-target: D:/INTELLIJ WORKSPACE/HOTEL BOOKING SYSTEM/user-service/src/main/resources/db/migration/V1__init_schema.sql
+      hbm2ddl:
+        delimiter: ";"

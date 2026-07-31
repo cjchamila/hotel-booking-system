@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/userservice_db
+    username: postgres
+    password: chamilaRoot@123
+
+  jpa:
+    # Wipes/creates tables on startup during early rapid feature building
+    hibernate:
+#      ddl-auto: create
+      show-sql: true # Prints queries directly to your IntelliJ console
+
+  flyway:
+    enabled: true # Flyway disabled until schema layout settles completely.After that, enabled
+
+
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web.FilterChainProxy: DEBUG
+
+#logging:
+#  level:
+#    # Shows detailed MVC exception resolution details without security noise
+#    org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
+#    org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver: DEBUG
+
+
