@@ -1,17 +1,19 @@
-spring:
-  application:
-    name: user-service
-
 server:
   port: 8080
 #  servlet:
 #    context-path: /api/v1
 
-  # 1. Database Connection Settings
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/userservice_db
-#    username: postgres
-#    password: chamilaRoot@123
+spring:
+  application:
+    name: user-service
+
+
+
+#   1. Database Connection Settings
+  datasource:
+    url: jdbc:postgresql://localhost:5432/userservice_db
+    username: postgres
+    password: chamilaRoot@123
 
 
   # Global JPA configurations (Dialect, naming strategies, etc.)

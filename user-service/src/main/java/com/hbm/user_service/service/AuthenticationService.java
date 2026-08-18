@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    public AuthResponse authenticate(LoginRequest request) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
+    public AuthResponse authenticate(LoginRequest request) throws AuthenticationException,IOException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException {
        Authentication authentication= authenticationManager
                .authenticate(
                        new UsernamePasswordAuthenticationToken(request.userName(),request.password()));

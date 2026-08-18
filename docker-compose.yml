@@ -1,25 +1,70 @@
+#version: '3.8' # Docker compose version upgraded to support container networks and deployment configurations
 
-  version: '2' #docker compose version
-  services:
-    zookeeper:
-      image: confluentinc/cp-zookeeper:7.4.4
-      environment:
-        ZOOKEEPER_CLIENT_PORT: 2181 #listends to kafka on this port
-        ZOOKEEPER_TICK_TIME: 2000
-      ports:
-        - "22181:2181" #HOST : CONTAINER eg. localhost:22181 (external)
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181 #listends to kafka on this port
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181" #HOST : CONTAINER eg. localhost:22181 (external)
+    networks:
+      - app-net
 
-    kafka:
-      image: confluentinc/cp-kafka:7.4.4
-      depends_on:
-        - zookeeper #start zookeeper before kafka
-      ports:
-        - "29092:29092"
-      environment:
-        KAFKA_BROKER_ID: 1
-        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 #Inside docker network -Kafka container → zookeeper container
-        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092 #kafka:9092 -> for Docker containers
-                                                                                            #localhost:29092 -> for applications running on host machine
-        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-        KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - zookeeper #start zookeeper before kafka
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 #Inside docker network -Kafka container → zookeeper container
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092 #kafka:9092 -> for Docker containers #localhost:29092 -> for applications running on host machine
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - app-net
+
+  user-service:
+    build: ./user-service # Context folder pointing to your user service project files
+    ports:
+      - "8080:8080" # Exposed on port 8080 as requested
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092 # High-speed internal Docker network traffic route
+      - SPRING_THREADS_VIRTUAL_ENABLED=true # Optional performance boost optimized natively for your Java 21 platform
+    depends_on:
+      - kafka # Forces microservice initialization sequences to hold until the broker is running
+    networks:
+      - app-net
+
+  bookingservice:
+    build: ./booking-service # Context folder pointing to your booking service project files
+    ports:
+      - "8081:8081" # Exposed on port 8081 as requested
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_THREADS_VIRTUAL_ENABLED=true
+    depends_on:
+      - kafka
+    networks:
+      - app-net
+
+  paymentservice:
+    build: ./payment-service # Context folder pointing to your payment service project files
+    ports:
+      - "8082:8082" # Exposed on port 8082 as requested
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_CONSUMER_GROUP_ID=payment-group # Group assignment identifying payment event team boundaries
+      - SPRING_THREADS_VIRTUAL_ENABLED=true
+    depends_on:
+      - kafka
+    networks:
+      - app-net
+
+# Custom isolated communication bridge allowing standard container-to-container domain resolution
+networks:
+  app-net:
+    driver: bridge
