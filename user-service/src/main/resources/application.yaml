@@ -11,9 +11,9 @@ spring:
 
 #   1. Database Connection Settings
   datasource:
-    url: jdbc:postgresql://localhost:5432/userservice_db
+    url: jdbc:postgresql://postgres:5432/userservice_db
     username: postgres
-    password: chamilaRoot@123
+    password: postgres
 
 
   # Global JPA configurations (Dialect, naming strategies, etc.)
@@ -22,13 +22,14 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   # Global Flyway configurations
   flyway:
     locations: classpath:db/migration
 
 
-
+#debug: true
 
 
 
